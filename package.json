@@ -1,7 +1,7 @@
 {
   "name": "ajah",
   "version": "0.1.0",
-  "description": "a lib hook into ajax",
+  "description": "a lib hook into XMLHttpRequest",
   "main": "./dist/ajah.js",
   "scripts": {
     "test": "mocha ./test/*.test.js --compilers js:babel-core/register --color",

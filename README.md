@@ -2,7 +2,7 @@
 
 ### Description
 
-a lib hook into ajax
+a lib hook into XMLHttpRequest
 
 ### Usage
 
