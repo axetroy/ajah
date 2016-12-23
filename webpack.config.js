@@ -7,7 +7,8 @@ const argv = require('yargs');
 // webpack.config.js
 module.exports = {
   entry: {
-    "ajah": path.join(__dirname, 'index.js')
+    "ajah": path.join(__dirname, 'index.js'),
+    "ajah.min": path.join(__dirname, 'index.js')
   },
   output: {
     path: path.join(__dirname, '/dist'),
