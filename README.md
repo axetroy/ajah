@@ -7,6 +7,8 @@ a lib hook into XMLHttpRequest
 ### Usage
 
 ```bash
+npm install ajah --save
+# or
 npm install https://github.com/axetroy/ajah.git --save
 ```
 
