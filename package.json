@@ -1,0 +1,51 @@
+{
+  "name": "ajah",
+  "version": "0.1.0",
+  "description": "a lib hook into ajax",
+  "main": "./dist/ajah.js",
+  "scripts": {
+    "test": "mocha ./test/*.test.js --compilers js:babel-core/register --color",
+    "test:watch": "gulp test:watch",
+    "build": "webpack --display-error-details --progress --colors --es5",
+    "build:es6": "webpack --display-error-details --progress --colors --es6",
+    "watch": "webpack --display-error-details --progress --colors --watch --es5",
+    "coverage": "istanbul cover ./**/*.js",
+    "doc": "./node_modules/.bin/jsdoc ./index.js -c jsdoc.conf.json --readme ./README.md",
+    "contributor": "./node_modules/.bin/readme-stat"
+  },
+  "author": "axetroy",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^3.4.34",
+    "@types/core-js": "^0.9.34",
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.46",
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.14",
+    "docdash": "^0.4.0",
+    "git-scripts": "^0.2.1",
+    "gulp": "^3.9.1",
+    "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.3",
+    "jsdocs": "^0.1.0",
+    "mocha": "^3.2.0",
+    "readme-stat": "https://github.com/axetroy/readme-stat.git",
+    "requirejs": "^2.3.2",
+    "typescript": "^2.0.6",
+    "unminified-webpack-plugin": "^1.1.1",
+    "validate-commit": "^2.3.2",
+    "webpack": "^1.13.2",
+    "webpack-bundle-analyzer": "^1.5.3",
+    "yargs": "^6.4.0"
+  },
+  "dependencies": {},
+  "git": {
+    "scripts": {
+      "commit-msg": "./node_modules/.bin/validate-commit-msg $1",
+      "post-merge": "yarn"
+    }
+  }
+}

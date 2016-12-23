@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>index.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="ajah.html">ajah</a><ul class='methods'><li data-type='method'><a href="ajah.html#.itShouldAbort">itShouldAbort</a></li><li data-type='method'><a href="ajah.html#.itShouldOpen">itShouldOpen</a></li><li data-type='method'><a href="ajah.html#.itShouldSend">itShouldSend</a></li><li data-type='method'><a href="ajah.html#.openInterceptor">openInterceptor</a></li><li data-type='method'><a href="ajah.html#.transformHeaders">transformHeaders</a></li><li data-type='method'><a href="ajah.html#.transformRequestBody">transformRequestBody</a></li><li data-type='method'><a href="ajah.html#.transformResponseBody">transformResponseBody</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">index.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>let originOpen = XMLHttpRequest.prototype.open;
+let originSetRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+let originSend = XMLHttpRequest.prototype.send;
+
+let symbols = {
+  method: Symbol('method'),
+  url: Symbol('url'),
+  isAsync: Symbol('isAsync'),
+  body: Symbol('body'),
+  headers: Symbol('headers'),
+  fn: {
+    openInterceptor: Symbol('openInterceptor'),
+    shouldOpen: Symbol('itShouldOpen'),
+    shouldSend: Symbol('itShouldSend'),
+    ShouldAbort: Symbol('itShouldAbort'),
+    transformHeaders: Symbol('transformHeaders'),
+    transformRequestBody: Symbol('transformRequestBody')
+  }
+};
+
+/**
+ * handler the callback.
+ * @callback itShouldCallback
+ * @param method  {string}    request method
+ * @param url     {string}    request url
+ * @param body    {string}    request body
+ * @param headers {Object}    request headers
+ * @returns {Boolean}
+ */
+
+/**
+ * handler the callback.
+ * @callback headerTransformCallback
+ * @param method  {string}    request method
+ * @param url     {string}    request url
+ * @param body    {string}    request body
+ * @param headers {Object}    request headers
+ * @returns {Object}
+ */
+
+/**
+ * handler the callback.
+ * @callback bodyTransformCallback
+ * @param method  {string}    request method
+ * @param url     {string}    request url
+ * @param body    {string}    request body
+ * @param headers {Object}    request headers
+ * @param [response]  {any}   response
+ * @returns {String}
+ */
+
+/**
+ * handler the callback.
+ * @callback openInterceptorCallback
+ * @param method      {string}    request method
+ * @param url         {string}    request url
+ * @param isAsync     {Boolean}   async or not
+ * @returns {Arguments}
+ */
+
+/**
+ * handler the callback.
+ * @callback itShouldOpenCallback
+ * @param method      {string}    request method
+ * @param url         {string}    request url
+ * @param isAsync     {Boolean}   async or not
+ * @returns {Boolean}
+ */
+
+/**
+ * @namespace ajah
+ * @property env {String} the Javascript run-time, it should be 'dev' or 'prod'
+ * @example
+ ajah
+ .openInterceptor(function (method, url, isAsync) {
+    method = method === 'DELETE' ? 'GET' : method;    // change the http method
+    return [method, url, isAsync];
+  })
+ .itShouldOpen(function (method, url, isAsync) {
+    if (method === 'DELETE') return false;            // if the method is DELETE, the it will not hand shake with the serve
+    return true;
+  })
+ .itShouldSend(function (method, url, body, headers) {
+    if (!headers.Authorization) return false;         // if this request without token field, so don't send thi request
+    return true;
+  })
+ .transformHeaders(function (method, url, body, headers) {
+    headers['Authorization'] = 'this is a mock token';    // add a headers field for this request
+    return headers;
+  })
+ .transformRequestBody(function (method, url, body, headers) {
+    if (method === 'GET') return null;                    // if method is GET, then it should not send any body.
+    return body;
+  })
+ .transformResponseBody(function (method, url, body, headers, response) {
+    // TODO
+    return response;
+  })
+ .itShouldAbort(function (method, url, body, headers) {
+    if (url.indexOf('https://') &lt; 0) return true;         // if this request is not https, then abort this request.
+    return false;
+  });
+ */
+const ajah = {
+  env: 'prod',
+  /**
+   * hook before call .open() method, and you can change the arguments
+   * @param callback {openInterceptorCallback}
+   * @returns {ajah}
+   */
+  openInterceptor(callback){
+    ajah[symbols.fn.openInterceptor] = callback;
+    return this;
+  },
+  /**
+   * it should be hand-shake with serve or not
+   * @param callback  {itShouldOpenCallback}
+   * @returns {ajah}
+   */
+  itShouldOpen(callback){
+    ajah[symbols.fn.shouldOpen] = callback;
+    return this;
+  },
+  /**
+   * this request should be send or not
+   * @param callback {itShouldCallback}
+   * @returns {ajah}
+   */
+  itShouldSend(callback){
+    ajah[symbols.fn.shouldSend] = callback;
+    return this;
+  },
+  /**
+   * after the request was sent, this request should abort or not
+   * @param callback  {itShouldCallback}
+   * @returns {ajah}
+   */
+  itShouldAbort(callback){
+    ajah[symbols.fn.itShouldAbort] = callback;
+    return this;
+  },
+  /**
+   * transform the request headers
+   * @param callback {headerTransformCallback}
+   * @returns {ajah}
+   */
+  transformHeaders(callback) {
+    ajah[symbols.fn.transformHeaders] = callback;
+    return this;
+  },
+  /**
+   * transform the request body
+   * @param callback {bodyTransformCallback}
+   * @returns {ajah}
+   */
+  transformRequestBody(callback){
+    ajah[symbols.fn.transformRequestBody] = callback;
+    return this;
+  },
+  /**
+   * transform the response body
+   * @param callback {bodyTransformCallback}
+   * @returns {ajah}
+   */
+  transformResponseBody(callback){
+    ajah[symbols.fn.transformResponseBody] = callback;
+    return this;
+  },
+  [symbols.fn.shouldSend]: function (method, url, body, headers) {
+    return true;
+  },
+  [symbols.fn.openInterceptor]: function (method, url, isAsync) {
+    return arguments;
+  },
+  [symbols.fn.itShouldAbort]: function (method, url, body, headers) {
+    return false;
+  },
+  [symbols.fn.transformHeaders]: function (method, url, body, headers) {
+    return headers;
+  },
+  [symbols.fn.transformRequestBody]: function (method, url, body, headers) {
+    return body;
+  },
+  [symbols.fn.transformResponseBody]: function (method, url, body, headers, response) {
+    return response;
+  }
+};
+
+XMLHttpRequest.prototype.open = function () {
+  let method = arguments[0];
+  let url = arguments[1];
+  let isAsync = arguments[2];
+
+  if (ajah.env === 'dev') {
+    console.log(`[${method}]: ${url}`);
+  } else {
+
+  }
+
+  let openInterceptor = ajah[symbols.fn.openInterceptor];
+
+  let [_method,_url,_isAsync] = (openInterceptor.call(this, method, url, isAsync) || []);
+
+  this[symbols.method] = _method || method;
+  this[symbols.url] = _url || url;
+  this[symbols.isAsync] = _isAsync || isAsync;
+
+  let itShouldOpenFn = ajah[symbols.fn.shouldOpen];
+
+  let params = [this[symbols.method], this[symbols.url], this[symbols.isAsync]];
+
+  try {
+    let itShouldOpen = itShouldOpenFn.apply(this, params);
+    if (itShouldOpen === false) throw new Error('it should not open the serve');
+
+    originOpen.apply(this, params);
+  } catch (err) {
+    console.error(err);
+  }
+
+};
+
+XMLHttpRequest.prototype.setRequestHeader = function () {
+  let key = arguments[0];
+  let value = arguments[1];
+  if (!this[symbols.headers]) this[symbols.headers] = {};
+  this[symbols.headers][key] = value;
+  originSetRequestHeader.apply(this, arguments)
+};
+
+XMLHttpRequest.prototype.send = function () {
+
+  this[symbols.body] = arguments[0];
+
+  let params = [this[symbols.method], this[symbols.url], this[symbols.body], this[symbols.headers]];
+
+  try {
+    let itShouldSendFn = ajah[symbols.fn.shouldSend];                       // 判断是否可以发送请求
+    let transformHeadersFn = ajah[symbols.fn.transformHeaders];             // 对于header变形
+    let transformRequestBodyFn = ajah[symbols.fn.transformRequestBody];       // 对于request body变形
+    let itShouldAbortFn = ajah[symbols.fn.itShouldAbort];       // 是否要取消请求
+
+    let itShouldSend = itShouldSendFn.call(this, ...params);
+
+    if (itShouldSend === false) {
+      console.error(`Should Not Send: ${this[symbols.url]}`)
+    } else {
+      // transform headers start
+      let headers = transformHeadersFn.call(this, ...params);
+      for (let name in headers) {
+        if (headers.hasOwnProperty(name)) {
+          this.setRequestHeader(name, headers[name]);
+        }
+      }
+      // transform request body start
+      let body = transformRequestBodyFn.call(this, ...params) + '';
+
+      originSend.apply(this, [body]);
+
+      let itShouldAbort = itShouldAbortFn.call(this, ...params);
+
+      itShouldAbort === true &amp;&amp; this.abort();
+
+    }
+
+  } catch (err) {
+    console.error(err);
+  }
+
+};
+
+/*
+ajah
+  .openInterceptor(function (method, url, isAsync) {
+    method = method === 'DELETE' ? 'GET' : method;    // change the http method
+    return [method, url, isAsync];
+  })
+  .itShouldOpen(function (method, url, isAsync) {
+    if (method === 'DELETE') return false;            // if the method is DELETE, the it will not hand shake with the serve
+    return true;
+  })
+  .itShouldSend(function (method, url, body, headers) {
+    if (!headers.Authorization) return false;         // if this request without token field, so don't send thi request
+    return true;
+  })
+  .transformHeaders(function (method, url, body, headers) {
+    headers['Authorization'] = 'this is a mock token';    // add a headers field for this request
+    return headers;
+  })
+  .transformRequestBody(function (method, url, body, headers) {
+    if (method === 'GET') return null;                    // if method is GET, then it should not send any body.
+    return body;
+  })
+  .transformResponseBody(function (method, url, body, headers, response) {
+    // TODO
+    return response;
+  })
+  .itShouldAbort(function (method, url, body, headers) {
+    if (url.indexOf('https://') &lt; 0) return true;         // if this request is not https, then abort this request.
+    return false;
+  });
+*/
+
+
+export default ajah;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Dec 22 2016 18:00:08 GMT+0800 (CST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

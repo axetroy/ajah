@@ -1,0 +1,11 @@
+test
+sauce.yml
+.coveralls.yml
+.travis.yml
+Gulpfile.js
+docs
+analyzer
+yarn.lock
+webpack.config.js
+jsdoc.conf.json
+*.ts
