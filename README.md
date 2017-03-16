@@ -1,5 +1,7 @@
 # ajah.js
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/axetroy/ajah.svg)](https://greenkeeper.io/)
+
 ### Description
 
 a lib hook into XMLHttpRequest
