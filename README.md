@@ -49,6 +49,10 @@ ajah
 
 ```
 
+### example
+
+- [ajax-strict-mode](https://github.com/axetroy/ajax-strict-mode)
+
 ### [Documentation](https://axetroy.github.io/ajah);
 
 ### Contribution
